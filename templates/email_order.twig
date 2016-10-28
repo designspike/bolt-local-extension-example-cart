@@ -1,0 +1,64 @@
+{% set fields = {
+    "Request Type":             checkout.order_type,
+    "Email":                    checkout.email,
+    "Name":                     checkout.name,
+    "Company":                  checkout.company,
+    "Phone":                    checkout.phone,
+    "Comments":                 checkout.comments,
+    "Billing Address":          checkout.billing_address,
+    "Billing City":             checkout.billing_city,
+    "Billing State":            checkout.billing_state,
+    "Billing Zip":              checkout.billing_zip,
+    "Shipping Same As Billing": checkout.shipping_same_as_billing ? 'Yes' : '',
+    "Shipping Address":         checkout.shipping_address,
+    "Shipping City":            checkout.shipping_city,
+    "Shipping State":           checkout.shipping_state,
+    "Shipping Zip":             checkout.shipping_zip,
+} %}
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+    * {
+        font-family: 'Calibri', 'Helvetica', sans-serif;
+    }
+    th, td, table {
+        text-align: left;
+        border: 1px solid #ccc;
+        border-collapse: collapse;
+    }
+    td, th{
+        padding: 4px 8px;
+    }
+    </style>
+</head>
+<body>
+    <p>The following {{ checkout.order_type == "quote" ? "quote request" : "order" }} has been placed.</p>
+
+    <p><b>Items</b></p>
+    {% if cart %}
+        <table>
+            {% for item in cart %}
+                <tr>
+                    <th>{{ item.number }}</th>
+                    <th>{{ item.name }}</th>
+                    <th>{{ item.unit }}</th>
+                    <td>{{ item.qty }}</td>
+                </tr>
+            {% endfor %}
+        </table>
+    {% else %}
+        <p>(No items selected)</p>
+    {% endif %}
+    
+    <p><b>Customer</b></p>
+    <table>
+        {% for label, value in fields %}
+            <tr>
+                <th>{{ label }}</th>
+                <td>{{ value }}</td>
+            </tr>
+        {% endfor %}
+    </table>
+</body>
+</html>

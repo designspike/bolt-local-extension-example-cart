@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1>Product List</h1>
+        <p><a href="/cart">Items in cart: {{ cart_count() }}</a></p>
+        <table class="table" style="width: auto">
+            <tr>
+            <tr>
+                <td>Peanut Butter</td>
+                <td>16 oz</td>
+                <td>
+                    <form action="/cart/add" method="post">
+                        <input type="hidden" name="identifier" value="PB16oz-12345">
+                        <input type="hidden" name="id"     value="12345">
+                        <input type="hidden" name="name"   value="Peanut Butter">
+                        <input type="hidden" name="number" value="PB16oz">
+                        <input type="hidden" name="unit"   value="16 oz">
+                        <input type="number" name="qty"    value="1" title="Quantity for Peanut Butter" style="width: 60px" min="1">
+                        <input class="btn btn-primary" type="submit" value="Add">
+                    </form>
+                </td>
+            </tr>
+            <tr>
+                <td>Jelly</td>
+                <td>16 oz</td>
+                <td>
+                    <form action="/cart/add" method="post">
+                        <input type="hidden" name="identifier" value="JE16oz-12346">
+                        <input type="hidden" name="id"     value="12346">
+                        <input type="hidden" name="name"   value="Jelly">
+                        <input type="hidden" name="number" value="JE16oz">
+                        <input type="hidden" name="unit"   value="16 oz">
+                        <input type="number" name="qty"    value="1" title="Quantity for Jelly" style="width: 60px" min="1">
+                        <input class="btn btn-primary" type="submit" value="Add">
+                    </form>
+                </td>
+            </tr>
+        </table>
+    </div>
+</body>
+</html>

@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+</head>
+<body>
+
+{% set checkout = {} %}
+{% if app.request.session.get('checkout') %}
+    {% set checkout = app.request.session.get('checkout') %}
+{% endif %}
+
+{% if not checkout.order_type %}
+    {% set checkout = checkout|merge({'order_type': 'quote'}) %}
+{% endif %}
+
+<div class="container">
+
+    <h1>Cart</h1>
+
+    {% for type, messages in app.session.flashbag.all() %}
+        {% for message in messages %}
+            <p class="bg-{{ type }}">{{ message }}</p>
+        {% endfor %}
+    {% endfor %}
+
+    <p><a href="/product/list">Continue shopping</a></p>
+
+    {% if cart_contents() %}
+        <form action="/cart/update" method="post">
+            <table class="table cart">
+                <tr>
+                    <th style="white-space: nowrap">Product #</th>
+                    <th>Name</th>
+                    <th>Unit</th>
+                    <th>Qty</th>
+                    <th></th>
+                </tr>
+                {% for identifier, product in cart_contents() %}
+                    {% setcontent product_record = 'products/' ~ product.id %}
+                    <tr>
+                        <td>{{ product.number }}</td>
+                        <td><a href="{{ product_record.link }}">{{ product.name }}</a></td>
+                        <td>{{ product.unit }}</td>
+                        <td>
+                            <input type="hidden" name="identifier[]" value="{{ identifier }}">
+                            <input type="number" name="qty[]" value="{{ product.qty }}" title="Quantity for {{ product.name }} {{ product.unit }}" min="1" style="width: 60px">
+                        </td>
+                        <td>
+                            <a class="btn" href="/cart/remove?identifier={{ identifier }}">Remove</a>
+                        </td>
+                    </tr>
+                {% endfor %}
+                <tr>
+                    <th colspan="5"><input class="btn btn-primary" type="submit" value="Update Cart"></th>
+                </tr>
+            </table>
+        </form>
+
+    {% else %}
+        <p>Your cart is empty.</p>
+    {% endif %}
+
+    <form action="/cart/send" method="post">
+        <div class="form-group">
+            <label for="checkout_email">Email *</label>
+            <input class="form-control" name="email" id="checkout_email" type="email" value="{{ checkout.email }}" required>
+        </div>
+        <div class="form-group">
+            <label for="checkout_name">Name *</label>
+            <input class="form-control" name="name" id="checkout_name" type="text" value="{{ checkout.name }}" required>
+        </div>
+        <div class="form-group">
+            <label for="checkout_company">Company</label>
+            <input class="form-control" name="company" id="checkout_company" type="text" value="{{ checkout.company }}">
+        </div>
+        <div class="form-group">
+            <label for="checkout_phone">Phone</label>
+            <input class="form-control" name="phone" id="checkout_phone" type="tel" value="{{ checkout.phone }}">
+        </div>
+        <div class="form-group">
+            <label for="checkout_comments">Comments</label>
+            <textarea class="form-control" name="comments" id="checkout_comments">{{ checkout.comments }}</textarea>
+        </div>
+
+        <div class="address-fields">
+            <h3>Billing address</h3>
+            <div class="form-group">
+                <label for="checkout_billing_address">Street address</label>
+                <input class="form-control" name="billing_address" id="checkout_billing_address" type="text" value="{{ checkout.billing_address }}">
+            </div>
+            <div class="row">
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <label for="checkout_billing_city">City</label>
+                        <input class="form-control" name="billing_city" id="checkout_billing_city" type="text" value="{{ checkout.billing_city }}">
+                    </div>
+                </div>
+                <div class="col-sm-3">
+                    <div class="form-group">
+                        <label for="checkout_billing_state">State</label>
+                        <input class="form-control" name="billing_state" id="checkout_billing_state" type="text" value="{{ checkout.billing_state }}">
+                    </div>
+                </div>
+                <div class="col-sm-3">
+                    <div class="form-group">
+                        <label for="checkout_billing_zip">Zip</label>
+                        <input class="form-control" name="billing_zip" id="checkout_billing_zip" type="text" value="{{ checkout.billing_zip }}">
+                    </div>
+                </div>
+            </div>
+
+            <h3>Shipping address</h3>
+            <div class="checkbox">
+                <label>
+                    <input type="checkbox" name="shipping_same_as_billing" {% if checkout.shipping_same_as_billing %}checked{% endif %}>
+                    Same as billing address
+                </label>
+            </div>
+            <div class="shipping-address-fields">
+                <div class="form-group">
+                    <label for="checkout_shipping_address">Street address</label>
+                    <input class="form-control" name="shipping_address" id="checkout_shipping_address" type="text" value="{{ checkout.shipping_address }}">
+                </div>
+                <div class="row">
+                    <div class="col-sm-6">
+                        <div class="form-group">
+                            <label for="checkout_shipping_city">City</label>
+                            <input class="form-control" name="shipping_city" id="checkout_shipping_city" type="text" value="{{ checkout.shipping_city }}">
+                        </div>
+                    </div>
+                    <div class="col-sm-3">
+                        <div class="form-group">
+                            <label for="checkout_shipping_state">State</label>
+                            <input class="form-control" name="shipping_state" id="checkout_shipping_state" type="text" value="{{ checkout.shipping_state }}">
+                        </div>
+                    </div>
+                    <div class="col-sm-3">
+                        <div class="form-group">
+                            <label for="checkout_shipping_zip">Zip</label>
+                            <input class="form-control" name="shipping_zip" id="checkout_shipping_zip" type="text" value="{{ checkout.shipping_zip }}">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <input class="btn btn-primary" type="submit" value="Send">
+    </form>
+</div>
+
+<script>
+    function updateState() {
+        if ($('[name=shipping_same_as_billing]').is(':checked')) {
+            $('.shipping-address-fields').hide();
+        } else {
+            $('.shipping-address-fields').show();
+        }
+    }
+    $('[name=order_type], [name=shipping_same_as_billing]').bind('change', updateState)
+    updateState();
+</script>
+
+</body>
+</html>
