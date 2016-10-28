@@ -12,10 +12,6 @@
     {% set checkout = app.request.session.get('checkout') %}
 {% endif %}
 
-{% if not checkout.order_type %}
-    {% set checkout = checkout|merge({'order_type': 'quote'}) %}
-{% endif %}
-
 <div class="container">
 
     <h1>Cart</h1>
