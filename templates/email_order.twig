@@ -1,5 +1,4 @@
 {% set fields = {
-    "Request Type":             checkout.order_type,
     "Email":                    checkout.email,
     "Name":                     checkout.name,
     "Company":                  checkout.company,
@@ -33,7 +32,7 @@
     </style>
 </head>
 <body>
-    <p>The following {{ checkout.order_type == "quote" ? "quote request" : "order" }} has been placed.</p>
+    <p>The following order has been placed.</p>
 
     <p><b>Items</b></p>
     {% if cart %}

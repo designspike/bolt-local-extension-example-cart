@@ -217,7 +217,7 @@ class CartExtension extends SimpleExtension
                 'cart'     => $app['session']->get('cart'),
                 'checkout' => $app['session']->get('checkout'),
             ]);
-            $subject = "New " . $request->request->get('order_type') . " from " . $request->request->get('name');
+            $subject = "New order from " . $request->request->get('name');
 
             // send it
             $message = \Swift_Message::newInstance($subject)
@@ -239,7 +239,7 @@ class CartExtension extends SimpleExtension
 
             $app['session']->getFlashBag()->add(
                 'success',
-                'Your ' . $request->request->get('order_type') . ' was sent.'
+                'Your order was sent.'
             );
 
             // erase the cart and checkout data
@@ -271,7 +271,6 @@ class CartExtension extends SimpleExtension
     {
         // save all the fields
         $checkout = [
-            'order_type'               => $request->request->get('order_type'),
             'email'                    => $request->request->get('email'),
             'name'                     => $request->request->get('name'),
             'company'                  => $request->request->get('company'),
